@@ -1,0 +1,8 @@
+{"dados": [
+  {"tipoVoto": "Sim", "dataRegistroVoto": "2026-11-24T19:35:00", "deputado_": {"id": 204500, "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/204500", "nome": "Ana Exemplo", "siglaPartido": "PARTA", "uriPartido": null, "siglaUf": "SP", "idLegislatura": 57, "urlFoto": null, "email": null}},
+  {"tipoVoto": "Sim", "dataRegistroVoto": "2026-11-24T19:35:10", "deputado_": {"id": 204510, "nome": "Carla Teste", "siglaPartido": "PARTB", "siglaUf": "PE", "idLegislatura": 57}},
+  {"tipoVoto": "Não", "dataRegistroVoto": "2026-11-24T19:36:00", "deputado_": {"id": 204520, "nome": "Davi Amostra", "siglaPartido": "PARTC", "siglaUf": "PE", "idLegislatura": 57}},
+  {"tipoVoto": "Abstenção", "dataRegistroVoto": "2026-11-24T19:36:30", "deputado_": {"id": 204530, "nome": "Elisa Padrão", "siglaPartido": "PARTA", "siglaUf": "RJ", "idLegislatura": 57}},
+  {"tipoVoto": "Sim", "dataRegistroVoto": "2026-11-24T19:37:00", "deputado_": {"id": 204540, "nome": "Fábio Dado", "siglaPartido": "PARTB", "siglaUf": "BA", "idLegislatura": 57}},
+  {"tipoVoto": "Obstrução", "dataRegistroVoto": "2026-11-24T19:37:30", "deputado_": {"id": 204550, "nome": "Gil Campo", "siglaPartido": "PARTC", "siglaUf": "MG", "idLegislatura": 57}}
+], "links": []}

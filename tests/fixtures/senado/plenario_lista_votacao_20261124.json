@@ -1,0 +1,12 @@
+{"ListaVotacoes": {"Votacoes": {"Votacao": [
+  {"CodigoSessao": "500100", "SiglaCasa": "SF", "CodigoSessaoVotacao": "7000", "CodigoMateria": "170001", "SiglaMateria": "PL", "NumeroMateria": "2100", "AnoMateria": "2025", "DataSessao": "2026-11-24", "HoraInicio": "16:20:00", "DescricaoVotacao": "Votação nominal do Projeto de Lei nº 2.100, de 2025.", "Resultado": "A", "Secreta": "N", "TotalVotosSim": "2", "TotalVotosNao": "1", "TotalVotosAbstencao": "0",
+   "Votos": {"VotoParlamentar": [
+     {"CodigoParlamentar": "6001", "NomeParlamentar": "Helena Senadora", "SexoParlamentar": "F", "SiglaPartido": "PARTA", "SiglaUF": "PE", "Voto": "Sim"},
+     {"CodigoParlamentar": "6002", "NomeParlamentar": "Igor Senador", "SiglaPartido": "PARTB", "SiglaUF": "PE", "Voto": "Não"},
+     {"CodigoParlamentar": "6003", "NomeParlamentar": "Júlia Senadora", "SiglaPartido": "PARTC", "SiglaUF": "SP", "Voto": "Sim"},
+     {"CodigoParlamentar": "6004", "NomeParlamentar": "Leo Senador", "SiglaPartido": "PARTA", "SiglaUF": "PE", "Voto": "P-NRV"}
+   ]}},
+  {"CodigoSessao": "500100", "SiglaCasa": "SF", "CodigoSessaoVotacao": "7001", "CodigoMateria": "170002", "SiglaMateria": "MSF", "NumeroMateria": "40", "AnoMateria": "2026", "DataSessao": "2026-11-24", "HoraInicio": "17:00:00", "DescricaoVotacao": "Escolha de autoridade.", "Resultado": "A", "Secreta": "S", "TotalVotosSim": "50", "TotalVotosNao": "10", "TotalVotosAbstencao": "1",
+   "Votos": {"VotoParlamentar": [{"CodigoParlamentar": "6001", "NomeParlamentar": "Helena Senadora", "SiglaPartido": "PARTA", "SiglaUF": "PE", "Voto": "Votou"}]}},
+  {"CodigoSessao": "500999", "SiglaCasa": "SF", "CodigoSessaoVotacao": "7002", "CodigoMateria": "170001", "DataSessao": "2026-11-24", "DescricaoVotacao": "Outra sessão.", "Resultado": "R", "Secreta": "N"}
+]}}}

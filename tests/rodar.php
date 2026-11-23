@@ -28,6 +28,7 @@ foreach ([
 
 require dirname(__DIR__) . '/config/bootstrap.php';
 require __DIR__ . '/apoio.php';
+require __DIR__ . '/apoio_coleta.php';
 
 $pdo = \BoxCidadania\Support\Database::conectar();
 $pdo->exec('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');

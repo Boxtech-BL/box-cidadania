@@ -1,0 +1,11 @@
+{
+  "dados": [
+    {"id": 70001, "dataHoraInicio": "2026-11-24T13:55", "situacao": "Convocada", "descricaoTipo": "Sessão Deliberativa Extraordinária", "orgaos": [{"id": 180, "sigla": "PLEN"}]},
+    {"id": 70003, "dataHoraInicio": "2026-11-25T14:00", "situacao": "Convocada", "descricaoTipo": "Sessão Deliberativa Ordinária", "orgaos": [{"id": 180, "sigla": "PLEN"}]},
+    {"id": 70004, "dataHoraInicio": "2026-11-26T10:00", "situacao": "Convocada", "descricaoTipo": "Sessão Deliberativa Extraordinária", "orgaos": [{"id": 180, "sigla": "PLEN"}]}
+  ],
+  "links": [
+    {"rel": "self", "href": "https://dadosabertos.camara.leg.br/api/v2/eventos?dataInicio=2026-11-23&dataFim=2026-11-30&siglaOrgao=PLEN&ordem=ASC&ordenarPor=dataHoraInicio&itens=100&pagina=2"},
+    {"rel": "first", "href": "https://dadosabertos.camara.leg.br/api/v2/eventos?dataInicio=2026-11-23&dataFim=2026-11-30&siglaOrgao=PLEN&ordem=ASC&ordenarPor=dataHoraInicio&itens=100&pagina=1"}
+  ]
+}

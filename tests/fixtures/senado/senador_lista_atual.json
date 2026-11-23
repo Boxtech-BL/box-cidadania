@@ -1,0 +1,5 @@
+{"ListaParlamentarEmExercicio": {"Metadados": {"Versao": "23/11/2026"}, "Parlamentares": {"Parlamentar": [
+  {"IdentificacaoParlamentar": {"CodigoParlamentar": "6001", "CodigoPublicoNaLegAtual": "800", "NomeParlamentar": "Helena Senadora", "NomeCompletoParlamentar": "Helena Exemplo Senadora", "SexoParlamentar": "Feminino", "FormaTratamento": "Senadora ", "SiglaPartidoParlamentar": "PARTA", "UfParlamentar": "PE"}, "Mandato": {"UfParlamentar": "PE"}},
+  {"IdentificacaoParlamentar": {"CodigoParlamentar": "6002", "NomeParlamentar": "Igor Senador", "SiglaPartidoParlamentar": "PARTB", "UfParlamentar": "PE"}},
+  {"IdentificacaoParlamentar": {"CodigoParlamentar": "6003", "NomeParlamentar": "Júlia Senadora", "SiglaPartidoParlamentar": "PARTC", "UfParlamentar": "SP"}}
+]}}}

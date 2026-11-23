@@ -1,0 +1,5 @@
+{"dados": [
+  {"idVotacao": "2400001-50", "uriVotacao": "https://dadosabertos.camara.leg.br/api/v2/votacoes/2400001-50", "siglaOrgao": "PLEN", "descricao": "PL 1001/2026", "codPartidoBloco": 1, "siglaPartidoBloco": "PARTA", "uriPartidoBloco": null, "orientacaoVoto": "Sim", "codTipoLideranca": "P"},
+  {"idVotacao": "2400001-50", "siglaPartidoBloco": "PARTC", "orientacaoVoto": "Não", "codTipoLideranca": "P"},
+  {"idVotacao": "2400001-50", "siglaPartidoBloco": "Governo", "orientacaoVoto": "Sim", "codTipoLideranca": "G"}
+], "links": []}

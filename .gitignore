@@ -1,0 +1,7 @@
+.env
+.env.testing
+/storage/logs/*
+/storage/mail/*
+/storage/cache/*
+!/storage/**/.gitkeep
+.phpunit.cache/

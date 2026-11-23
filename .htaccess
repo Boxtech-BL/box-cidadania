@@ -1,0 +1,14 @@
+# Raiz do Box Cidadania na hospedagem (ex.: public_html/cidadania/).
+# Só a pasta public/ é acessível pelo navegador; todo o resto (src, config, migrations, cron, storage, .env) fica bloqueado.
+Options -Indexes
+
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(src|config|migrations|cron|bin|tests|storage|database)(/|$) - [F,L]
+  RewriteCond %{REQUEST_URI} !/public/
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

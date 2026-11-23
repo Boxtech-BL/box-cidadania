@@ -1,0 +1,22 @@
+# Pasta pública do Box Cidadania (Apache da Locaweb).
+Options -Indexes
+DirectoryIndex index.php
+
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Arquivo que existe (CSS, JS, ícone) é servido direto; o resto vai para o index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# HTTPS: a Locaweb já força no nginx (como no SGI). Não acrescente redirecionamento por %{HTTPS} aqui: entra em laço.

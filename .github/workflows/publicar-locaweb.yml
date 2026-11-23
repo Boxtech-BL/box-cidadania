@@ -1,0 +1,102 @@
+# Testa o Box Cidadania e publica na hospedagem da Locaweb por FTP a cada push no main
+# (ou manualmente, em Actions > Run workflow). Em pull requests, só roda os testes.
+# Mesmo modelo do SGI Boxtech.
+#
+# Cadastre em Settings > Secrets and variables > Actions (ambiente "locaweb" ou do repositório):
+#   Secrets:   LOCAWEB_FTP_SERVIDOR (ex.: ftp.boxtech.com.br), LOCAWEB_FTP_USUARIO, LOCAWEB_FTP_SENHA
+#   Variables (opcionais): LOCAWEB_PASTA (padrão ./public_html/cidadania/), LOCAWEB_FTP_PROTOCOLO (ftp ou ftps; padrão ftp)
+#
+# O .env não está no repositório e nunca é enviado nem apagado: ele é criado uma vez no servidor.
+name: Publicar Box Cidadania na Locaweb
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: publicar-locaweb
+  cancel-in-progress: false
+
+jobs:
+  testes:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.5 é a versão da hospedagem da Locaweb; 8.1 é a mínima suportada.
+        php: ['8.1', '8.5']
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cidadania
+          POSTGRES_PASSWORD: cidadania
+          POSTGRES_DB: cidadania_teste
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U cidadania" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_pgsql, mbstring
+          coverage: none
+      - name: Sintaxe
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l > /dev/null
+      - name: Testes
+        env:
+          CIDADANIA_TESTE_DB: pgsql://cidadania:cidadania@127.0.0.1:5432/cidadania_teste
+        run: php tests/rodar.php
+
+  publicar:
+    needs: testes
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: locaweb
+    steps:
+      - uses: actions/checkout@v4
+      # Mostra só SE cada dado chegou (nunca o valor), para achar secret com nome ou lugar errado.
+      - name: Conferir dados de FTP
+        env:
+          SERVIDOR: ${{ secrets.LOCAWEB_FTP_SERVIDOR || vars.LOCAWEB_FTP_SERVIDOR }}
+          USUARIO: ${{ secrets.LOCAWEB_FTP_USUARIO || vars.LOCAWEB_FTP_USUARIO }}
+          SENHA: ${{ secrets.LOCAWEB_FTP_SENHA }}
+          SENHA_EM_VARIAVEL: ${{ vars.LOCAWEB_FTP_SENHA != '' }}
+        run: |
+          falta=0
+          for nome in SERVIDOR USUARIO SENHA; do
+            if [ -n "${!nome}" ]; then echo "LOCAWEB_FTP_$nome: ok"; else echo "::error::LOCAWEB_FTP_$nome não chegou ao workflow"; falta=1; fi
+          done
+          if [ "$SENHA_EM_VARIAVEL" = "true" ]; then
+            echo "::error::LOCAWEB_FTP_SENHA está em Variables (visível). Apague-a de lá e crie em Secrets."
+            falta=1
+          fi
+          if [ $falta = 1 ]; then
+            echo "Crie em Settings > Secrets and variables > Actions > aba Secrets > New repository secret,"
+            echo "com os nomes exatos LOCAWEB_FTP_SERVIDOR, LOCAWEB_FTP_USUARIO e LOCAWEB_FTP_SENHA."
+            exit 1
+          fi
+      - name: Enviar por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.LOCAWEB_FTP_SERVIDOR || vars.LOCAWEB_FTP_SERVIDOR }}
+          username: ${{ secrets.LOCAWEB_FTP_USUARIO || vars.LOCAWEB_FTP_USUARIO }}
+          password: ${{ secrets.LOCAWEB_FTP_SENHA }}
+          protocol: ${{ vars.LOCAWEB_FTP_PROTOCOLO || 'ftp' }}
+          local-dir: ./
+          server-dir: ${{ vars.LOCAWEB_PASTA || './public_html/cidadania/' }}
+          # storage/ guarda logs, e-mails de teste e a marca da última migration do servidor: não é sobrescrito.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            tests/**
+            storage/logs/**
+            storage/mail/**
+            storage/cache/**
+            README.md
+            .env
+            .env.*

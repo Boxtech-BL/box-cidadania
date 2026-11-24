@@ -1,0 +1,4 @@
+{"TextoMateria": {"Materia": {"IdentificacaoMateria": {"CodigoMateria": "170001"}, "Textos": {"Texto": [
+  {"CodigoTexto": "9100001", "DescricaoTipoTexto": "Avulso inicial da matéria", "UrlTexto": "https://legis.senado.leg.br/sdleg-getter/documento?dm=9100001", "DataTexto": "2025-06-02"},
+  {"CodigoTexto": "9100002", "DescricaoTipoTexto": "Parecer", "UrlTexto": "https://legis.senado.leg.br/sdleg-getter/documento?dm=9100002"}
+]}}}}

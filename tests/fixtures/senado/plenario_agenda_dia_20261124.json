@@ -1,0 +1,9 @@
+{"AgendaPlenario": {"@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance", "Metadados": {"Versao": "24/11/2026 07:00:00", "VersaoServico": "1"}, "Sessoes": {"Sessao": [
+  {"CodigoSessao": "500100", "SiglaCasa": "SF", "NomeCasa": "Senado Federal", "DataSessao": "2026-11-24", "HoraInicioSessao": "14:00", "TipoSessao": "Deliberativa Ordinária", "SituacaoSessao": "Agendada", "NumeroSessao": "150",
+   "Materias": {"Materia": [
+     {"SequenciaOrdem": "1", "CodigoMateria": "170001", "SiglaMateria": "PL", "NumeroMateria": "2100", "AnoMateria": "2025", "DescricaoIdentificacaoMateria": "PL 2100/2025", "Ementa": "Altera a Lei nº 9.394, de 1996, para dispor sobre educação digital.", "NomeAutor": "Câmara dos Deputados", "DescricaoTipoTurno": "Turno único"},
+     {"SequenciaOrdem": "2", "CodigoMateria": "170002", "SiglaMateria": "MSF", "NumeroMateria": "40", "AnoMateria": "2026", "DescricaoIdentificacaoMateria": "MSF 40/2026", "Ementa": "Submete à apreciação do Senado Federal a indicação de embaixador.", "NomeAutor": "Presidência da República"}
+   ]}},
+  {"CodigoSessao": "500101", "SiglaCasa": "CN", "DataSessao": "2026-11-24", "HoraInicioSessao": "19:00", "TipoSessao": "Deliberativa Conjunta", "Materias": {"Materia": {"SequenciaOrdem": "1", "CodigoMateria": "180000", "SiglaMateria": "PLN", "NumeroMateria": "1", "AnoMateria": "2026", "Ementa": "Crédito."}}},
+  {"CodigoSessao": "500102", "SiglaCasa": "SF", "DataSessao": "2026-11-24", "HoraInicioSessao": "10:00", "TipoSessao": "Não Deliberativa", "Materias": null}
+]}}}

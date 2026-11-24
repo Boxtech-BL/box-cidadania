@@ -1,0 +1,9 @@
+{
+  "dados": [
+    {"ordem": 1, "topico": "Matéria sobre a mesa", "regime": "Urgência (Art. 155, RICD)", "codRegime": 3, "titulo": "PL 1001/2026", "proposicao_": {"id": 2400001, "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2400001", "siglaTipo": "PL", "codTipo": 139, "numero": 1001, "ano": 2026, "ementa": "Dispõe sobre a transparência das tarifas de transporte público."}, "relator": null, "textoParecer": null, "situacaoItem": null, "uriVotacao": null, "proposicaoRelacionada_": null},
+    {"ordem": 2, "topico": "Ordem do Dia", "regime": "Especial (Arts. 202 c/c 191, RICD)", "codRegime": 5, "titulo": "PEC 20/2025", "proposicao_": {"id": 2400002, "siglaTipo": "PEC", "numero": 20, "ano": 2025, "ementa": "Altera o art. 7º da Constituição Federal."}, "situacaoItem": null},
+    {"ordem": 3, "topico": "Ordem do Dia", "regime": "Urgência (Art. 155, RICD)", "titulo": "REQ 55/2026 => PL 1001/2026", "proposicao_": {"id": 2400001, "siglaTipo": "PL", "numero": 1001, "ano": 2026, "ementa": "Dispõe sobre a transparência das tarifas de transporte público."}, "situacaoItem": null},
+    {"ordem": 4, "topico": "Ordem do Dia", "regime": "Prioridade (Art. 151, II, RICD)", "titulo": "PL 4/2026", "proposicao_": {"id": 2400004, "siglaTipo": "PL", "numero": 4, "ano": 2026, "ementa": "Institui o Dia Nacional da Leitura."}, "situacaoItem": null}
+  ],
+  "links": []
+}

@@ -1,0 +1,7 @@
+{
+  "dados": [
+    {"id": 70001, "dataHoraInicio": "2026-11-24T15:00", "situacao": "Convocada", "descricaoTipo": "Sessão Deliberativa Extraordinária", "orgaos": [{"id": 180, "sigla": "PLEN"}]},
+    {"id": 70003, "dataHoraInicio": "2026-11-25T14:00", "situacao": "Convocada", "descricaoTipo": "Sessão Deliberativa Ordinária", "orgaos": [{"id": 180, "sigla": "PLEN"}]}
+  ],
+  "links": [{"rel": "self", "href": "https://dadosabertos.camara.leg.br/api/v2/eventos?pagina=1"}]
+}

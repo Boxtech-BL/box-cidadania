@@ -11,8 +11,8 @@ PHP 8.1+ e PostgreSQL, sem Composer, sem Node e sem Docker no servidor, no mesmo
 | Etapa | Situação |
 | --- | --- |
 | 1. Banco e cadastro | pronta |
-| 2. Coleta da Câmara | a fazer |
-| 3. Coleta do Senado | a fazer |
+| 2. Coleta da Câmara | pronta (falta conferir com a API real) |
+| 3. Coleta do Senado | pronta (falta conferir com a API real) |
 | 4. Votação e resultados | a fazer |
 | 5. Painel administrativo | a fazer |
 | 6. Painel público | a fazer |
@@ -33,16 +33,34 @@ PHP 8.1+ e PostgreSQL, sem Composer, sem Node e sem Docker no servidor, no mesmo
 
 Os textos de termos, privacidade e consentimento são **rascunhos** e precisam da revisão do advogado antes da publicação.
 
+### O que as etapas 2 e 3 entregam (coleta)
+
+- **Pauta em janela móvel** de hoje até 7 dias à frente, nas duas casas, só com sessões deliberativas do plenário:
+  - Câmara: `GET /eventos?siglaOrgao=PLEN` (segue o link `next` e deduplica por id, sem confiar no total), `GET /eventos/{id}/pauta`, `GET /proposicoes/{id}`, `/autores` e `/temas`. As sessões extraordinárias entram porque o filtro é pela descrição do tipo ("Sessão Deliberativa ...") e não por um código fixo.
+  - Senado: `GET /plenario/agenda/dia/{AAAAMMDD}.json` para cada dia da janela (fora as sessões do Congresso e as não deliberativas), `GET /materia/{codigo}.json` e `/materia/textos/{codigo}.json`.
+- **Mudanças da pauta** a cada execução: cada item fica `novo`, `mantido`, `retirado`, `adiado` ou `votado`, e toda mudança vai para `pauta_historico` (inclusive `reincluido` e `remarcado`). Saiu da pauta da sessão: retirado; passou para uma sessão posterior, sessão cancelada ou fora da agenda: adiado. Quando a fonte diz "Retirado de pauta" ou "Adiada", vale o que ela diz.
+- **Pauta ainda não divulgada**: sessão futura com pauta vazia fica com `sessoes_plenario.pauta_divulgada = false` e nenhum item é dado como retirado.
+- **Votação no app** (`proposicoes.votacao_aberta`): aberta enquanto a proposição tiver item novo ou mantido em sessão que ainda não começou; fecha no início da sessão. Se o item for retirado ou adiado, os votos ficam e a votação reabre quando ele voltar à pauta.
+- **Resultados** das sessões dos últimos 2 dias (cobre a noite da sessão e o dia seguinte; cada execução regrava a votação, sem duplicar):
+  - Câmara: `GET /eventos/{id}/votacoes`, `/votacoes/{id}`, `/votacoes/{id}/votos` e `/votacoes/{id}/orientacoes`. Os votos e orientações só são buscados para votações de proposições acompanhadas.
+  - Senado: `GET /plenario/lista/votacao/{AAAAMMDD}.json`.
+  - Votação simbólica (sem votos) e votação secreta (Senado) ficam com `nominal = false` e só o resultado; não entram em "Seus parlamentares".
+- **Parlamentares em exercício** (`GET /deputados` e `GET /senador/lista/atual.json`) no primeiro uso e toda segunda às 7h. Uma lista com menos da metade dos que estavam em exercício é recusada (resposta incompleta da API).
+- **Boas maneiras com as APIs**: user-agent `BoxCidadania/1.0 (+contato)`, 0,5 s entre chamadas ao mesmo host, cache em `storage/cache/api` (detalhes por 6 h, autores e temas por 24 h) e novas tentativas em 429 e 5xx.
+- **Acompanhamento**: cada execução fica em `coleta_execucoes` (casa, tipo, sucesso, resumo com contagens ou o erro), para o painel administrativo da etapa 5. Se a agenda falhar, nada é alterado.
+
+Os campos das respostas foram escritos a partir da documentação oficial e testados com respostas de exemplo em `tests/fixtures/`. Na primeira execução com as APIs reais, rode `php cron/coletar.php --forcar` e confira `coleta_execucoes`: o Senado em especial muda nomes de campo entre serviços, e a leitura aceita mais de um caminho, mas pode precisar de ajuste.
+
 ## Estrutura
 
 ```
 public/       index.php (único ponto de entrada), assets, manifest, service worker
-src/          Auth (cadastro, login, consentimento), Http (rotas, sessão, páginas), Mail, Support, Views
+src/          Auth (cadastro, login, consentimento), Coleta (Câmara, Senado, pauta, resultados), Http (rotas, sessão, páginas), Mail, Support, Views
 config/       bootstrap.php (autoload e .env)
 migrations/   SQL numerado; aplicado sozinho no primeiro acesso depois de cada publicação
-cron/         tarefas agendadas (limpeza diária)
+cron/         tarefas agendadas (coleta de hora em hora e limpeza diária)
 bin/          migrar.php
-tests/        rodar.php e casos/
+tests/        rodar.php, casos/ e fixtures/ (respostas de exemplo das APIs)
 storage/      logs, e-mails em modo log e cache (fora do Git)
 ```
 
@@ -87,7 +105,7 @@ O schema `public` do banco de teste é apagado e recriado a cada execução. Com
    - `MAIL_DRIVER=smtp` e os dados da conta de e-mail da Locaweb (`email-ssl.com.br`, porta 465, SSL).
    O `.env` nunca vai no repositório nem no FTP, e a publicação não o apaga.
 6. **Primeiro acesso.** Abra o endereço: as tabelas e os dados de UFs e municípios são criados sozinhos. Depois de cada publicação, as migrations novas também são aplicadas no primeiro acesso.
-7. **Cron.** Em **Tarefas agendadas** do painel, crie uma tarefa diária às 03:00 com `php /home/SEU_LOGIN/public_html/cidadania/cron/limpeza_diaria.php` (troque pelo caminho real que o FTP mostra). As coletas da pauta e dos resultados entram nas etapas 2 e 3.
+7. **Cron.** Em **Tarefas agendadas** do painel, crie uma tarefa diária às 03:00 com `php /home/SEU_LOGIN/public_html/cidadania/cron/limpeza_diaria.php` (troque pelo caminho real que o FTP mostra). Crie também a coleta, **de hora em hora** (no minuto 5, por exemplo), com `php /home/SEU_LOGIN/public_html/cidadania/cron/coletar.php`. O próprio script decide o que rodar: pauta e resultados nos dias úteis às 7h, 12h e 18h e de hora em hora das 14h às 22h nos dias com sessão marcada; parlamentares na segunda às 7h. Para rodar tudo na hora: `php cron/coletar.php --forcar` (opções `--casa=camara|senado` e `--so=pauta|resultados|parlamentares`).
 
 Se o site mostrar "Algo deu errado", o detalhe fica em `storage/logs/erros-AAAA-MM.log`, procurando pelo código do erro que aparece na página.
 

@@ -1,0 +1,5 @@
+{"dados": [
+  {"id": 204500, "nome": "Ana Exemplo", "siglaPartido": "PARTA", "siglaUf": "SP", "idLegislatura": 57},
+  {"id": 204510, "nome": "Carla Teste", "siglaPartido": "PARTB", "siglaUf": "PE", "idLegislatura": 57},
+  {"id": 204520, "nome": "Davi Amostra", "siglaPartido": "PARTC", "siglaUf": "PE", "idLegislatura": 57}
+], "links": [{"rel": "self", "href": "https://dadosabertos.camara.leg.br/api/v2/deputados?itens=100&pagina=1"}]}

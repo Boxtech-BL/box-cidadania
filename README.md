@@ -90,7 +90,7 @@ CIDADANIA_TESTE_DB="pgsql://cidadania:cidadania@127.0.0.1:5432/cidadania_test" p
 php tests/rodar.php cadastro     # só os testes com "cadastro" no nome
 ```
 
-O schema `public` do banco de teste é apagado e recriado a cada execução. No GitHub, os testes rodam em PHP 8.1 e 8.5 com PostgreSQL 16 a cada pull request.
+O schema `public` do banco de teste é apagado e recriado a cada execução. Com `CIDADANIA_TESTE_SCHEMA=cidadania`, os testes rodam nesse schema, como em produção no banco do SGI. No GitHub, os testes rodam em PHP 8.1 e 8.5 com PostgreSQL 16 a cada pull request.
 
 ## Publicar na Locaweb
 
@@ -100,11 +100,13 @@ O schema `public` do banco de teste é apagado e recriado a cada execução. No 
 4. **Publicação automática.** Em **Settings > Secrets and variables > Actions** do repositório, crie os secrets `LOCAWEB_FTP_SERVIDOR`, `LOCAWEB_FTP_USUARIO` e `LOCAWEB_FTP_SENHA` (e, se precisar, as variables `LOCAWEB_PASTA` e `LOCAWEB_FTP_PROTOCOLO`). A cada push no `main`, o workflow `publicar-locaweb.yml` roda os testes e, se passarem, envia os arquivos por FTP. Também dá para rodar à mão em **Actions > Publicar Box Cidadania na Locaweb > Run workflow**.
 5. **Configuração.** Na pasta publicada, crie o `.env` a partir do `.env.example` (pelo gerenciador de arquivos ou FTP) com:
    - `APP_ENV=production` e `APP_URL` com o endereço do passo 3, sem barra no final;
-   - os dados do banco do passo 2;
+   - os dados do banco do passo 2. Para usar o mesmo banco do SGI, repita host, porta, nome, usuário e senha dele e ponha `DB_SCHEMA=cidadania`: as tabelas do Box Cidadania ficam nesse schema, separadas das do SGI (que ficam no `public`);
    - `PSEUDONYM_KEY` com 64 caracteres aleatórios. **Guarde uma cópia segura e nunca troque**: sem ela os votos deixam de ser ligados às contas;
    - `MAIL_DRIVER=smtp` e os dados da conta de e-mail da Locaweb (`email-ssl.com.br`, porta 465, SSL).
    O `.env` nunca vai no repositório nem no FTP, e a publicação não o apaga.
 6. **Primeiro acesso.** Abra o endereço: as tabelas e os dados de UFs e municípios são criados sozinhos. Depois de cada publicação, as migrations novas também são aplicadas no primeiro acesso.
 7. **Cron.** Em **Tarefas agendadas** do painel, crie uma tarefa diária às 03:00 com `php /home/SEU_LOGIN/public_html/cidadania/cron/limpeza_diaria.php` (troque pelo caminho real que o FTP mostra). Crie também a coleta, **de hora em hora** (no minuto 5, por exemplo), com `php /home/SEU_LOGIN/public_html/cidadania/cron/coletar.php`. O próprio script decide o que rodar: pauta e resultados nos dias úteis às 7h, 12h e 18h e de hora em hora das 14h às 22h nos dias com sessão marcada; parlamentares na segunda às 7h. Para rodar tudo na hora: `php cron/coletar.php --forcar` (opções `--casa=camara|senado` e `--so=pauta|resultados|parlamentares`).
+
+Se o site mostrar "Algo deu errado", o detalhe fica em `storage/logs/erros-AAAA-MM.log`, procurando pelo código do erro que aparece na página.
 
 O HTTPS já é forçado pelo nginx da Locaweb. Não ponha redirecionamento por `%{HTTPS}` no `.htaccess`: o Apache recebe a conexão já sem criptografia e a regra entra em laço.

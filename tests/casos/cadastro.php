@@ -87,3 +87,28 @@ Testes::add('verificação: link vence em 48 horas e pode ser reenviado', functi
     $auth->reenviarVerificacao($id);
     afirmar($auth->verificarEmail(tokenDoEmail($mailer, '/verificar-email')));
 });
+
+Testes::add('cadastro: falha no envio do e-mail não impede a conta e fica registrada', function (PDO $pdo) {
+    $quebrado = new class implements \BoxCidadania\Mail\Mailer {
+        public function enviar(string $para, string $assunto, string $texto): void
+        {
+            throw new \RuntimeException('SMTP: resposta inesperada: 535 autenticação falhou');
+        }
+    };
+    $relogio = new RelogioFixo();
+    $auth = new AuthService($pdo, $quebrado, new \BoxCidadania\Support\Pseudonimo(str_repeat('chave-de-teste-', 4)),
+        new \BoxCidadania\Auth\LimiteTaxa($pdo, $relogio), $relogio, 'https://exemplo.test', 'termos-v1', 'politico-v1');
+    $log = RAIZ . '/storage/logs/erros-' . date('Y-m') . '.log';
+    $antes = is_file($log) ? filesize($log) : 0;
+
+    $id = $auth->cadastrar(dadosCadastro(), '10.0.0.1');
+    afirmar($auth->ultimoEnvioFalhou, 'falha marcada');
+    afirmar($auth->buscarPorId($id) !== null, 'conta criada');
+    clearstatcache();
+    afirmar(is_file($log) && filesize($log) > $antes, 'erro gravado no log');
+    afirmar(str_contains((string) file_get_contents($log), '535 autenticação falhou'));
+
+    $e = lanca(\BoxCidadania\Mail\FalhaEnvio::class, fn () => $auth->reenviarVerificacao($id));
+    afirmar(str_contains($e->getMessage(), 'código'), 'mensagem com código');
+    lanca(\BoxCidadania\Mail\FalhaEnvio::class, fn () => $auth->solicitarRecuperacao('maria@exemplo.com', '10.0.0.1'));
+});

@@ -51,3 +51,16 @@ Testes::add('banco: 27 UFs, municípios e votos sem id do usuário', function (P
     afirmar(!in_array('usuario_id', $colunas, true), 'votos_cidadania não pode ter usuario_id');
     afirmar(in_array('pseudonimo_usuario', $colunas, true));
 });
+
+Testes::add('banco: schema próprio valida o nome e recebe as tabelas', function (PDO $pdo) {
+    igual('cidadania', \BoxCidadania\Support\Database::validarSchema('cidadania'));
+    foreach (['public', 'Maiuscula', 'pg_x', 'a-b', 'x"; drop'] as $ruim) {
+        lanca(\InvalidArgumentException::class, fn () => \BoxCidadania\Support\Database::validarSchema($ruim));
+    }
+    $esperado = getenv('CIDADANIA_TESTE_SCHEMA') ?: 'public';
+    igual($esperado, $pdo->query('SELECT current_schema()')->fetchColumn());
+    // Mesmo que outro sistema tenha uma tabela "usuarios" no public, a do app é a do schema dele.
+    $schemaDaTabela = $pdo->query("SELECT n.nspname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.oid = to_regclass('usuarios')")->fetchColumn();
+    igual($esperado, $schemaDaTabela, 'usuarios resolve para o schema do app:');
+});

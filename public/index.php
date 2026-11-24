@@ -41,10 +41,10 @@ try {
     $app = new App($pdo, $sessao, App::criarMailer());
     $app->atender(Request::doGlobais($app->prefixo))->enviar();
 } catch (Throwable $e) {
-    error_log((string) $e);
+    $codigo = \BoxCidadania\Support\Log::erro('requisição', $e);
     http_response_code(500);
     header('Content-Type: text/html; charset=UTF-8');
     echo $producao
-        ? '<!doctype html><meta charset="utf-8"><p>Algo deu errado. Tente de novo em alguns minutos.</p>'
+        ? '<!doctype html><meta charset="utf-8"><p>Algo deu errado. Tente de novo em alguns minutos.</p><p><small>Código do erro: ' . $codigo . '</small></p>'
         : '<pre>' . htmlspecialchars((string) $e) . '</pre>';
 }

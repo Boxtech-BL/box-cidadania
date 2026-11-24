@@ -79,8 +79,8 @@ foreach ($fontes as $casa => $fonte) {
             echo date('c') . " {$casa} {$tipo}: " . json_encode($resumo, JSON_UNESCAPED_UNICODE) . "\n";
         } catch (\Throwable $e) {
             $falhou = true;
-            echo date('c') . " {$casa} {$tipo}: FALHA " . $e->getMessage() . "\n";
-            error_log("[coleta] {$casa} {$tipo}: " . $e->getMessage());
+            $codigo = \BoxCidadania\Support\Log::erro("coleta {$casa} {$tipo}", $e);
+            echo date('c') . " {$casa} {$tipo}: FALHA ({$codigo}) " . $e->getMessage() . "\n";
         }
     }
 }

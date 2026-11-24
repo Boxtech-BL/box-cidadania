@@ -50,6 +50,11 @@ jobs:
         env:
           CIDADANIA_TESTE_DB: pgsql://cidadania:cidadania@127.0.0.1:5432/cidadania_teste
         run: php tests/rodar.php
+      - name: Testes num schema próprio (como em produção, no banco do SGI)
+        env:
+          CIDADANIA_TESTE_DB: pgsql://cidadania:cidadania@127.0.0.1:5432/cidadania_teste
+          CIDADANIA_TESTE_SCHEMA: cidadania
+        run: php tests/rodar.php
 
   publicar:
     needs: testes

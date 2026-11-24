@@ -41,10 +41,15 @@ try {
     $app = new App($pdo, $sessao, App::criarMailer());
     $app->atender(Request::doGlobais($app->prefixo))->enviar();
 } catch (Throwable $e) {
-    error_log((string) $e);
+    // Grava o erro num arquivo próprio: na hospedagem compartilhada o error_log do PHP pode ir para outro lugar.
+    $codigo = bin2hex(random_bytes(4));
+    $registro = sprintf("[%s] erro %s\n%s\n\n", date('c'), $codigo, (string) $e);
+    if (@file_put_contents(RAIZ . '/storage/logs/erros-' . date('Y-m') . '.log', $registro, FILE_APPEND | LOCK_EX) === false) {
+        error_log($registro);
+    }
     http_response_code(500);
     header('Content-Type: text/html; charset=UTF-8');
     echo $producao
-        ? '<!doctype html><meta charset="utf-8"><p>Algo deu errado. Tente de novo em alguns minutos.</p>'
+        ? '<!doctype html><meta charset="utf-8"><p>Algo deu errado. Tente de novo em alguns minutos.</p><p><small>Código do erro: ' . $codigo . '</small></p>'
         : '<pre>' . htmlspecialchars((string) $e) . '</pre>';
 }

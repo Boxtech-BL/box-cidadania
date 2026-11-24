@@ -7,6 +7,7 @@ namespace BoxCidadania\Http;
 use BoxCidadania\Auth\AuthService;
 use BoxCidadania\Auth\ErroValidacao;
 use BoxCidadania\Auth\LimiteExcedido;
+use BoxCidadania\Mail\FalhaEnvio;
 use PDO;
 
 /**
@@ -89,7 +90,9 @@ final class AuthController
         }
         $this->sessao->renovar();
         $this->sessao->set('usuario_id', $id);
-        $this->sessao->aviso('Conta criada. Enviamos um link para o seu e-mail: abra-o para poder votar.');
+        $this->sessao->aviso($this->auth->ultimoEnvioFalhou
+            ? 'Conta criada, mas não conseguimos enviar o e-mail de confirmação agora. Use "Enviar de novo" daqui a alguns minutos.'
+            : 'Conta criada. Enviamos um link para o seu e-mail: abra-o para poder votar.');
         return $this->ir('/conta');
     }
 
@@ -108,7 +111,7 @@ final class AuthController
             try {
                 $this->auth->reenviarVerificacao((int) $u['id']);
                 $this->sessao->aviso('Enviamos um novo link de confirmação para ' . $u['email'] . '.');
-            } catch (LimiteExcedido $e) {
+            } catch (LimiteExcedido | FalhaEnvio $e) {
                 $this->sessao->aviso($e->getMessage());
             }
             return $this->ir('/conta');
@@ -139,7 +142,7 @@ final class AuthController
     {
         try {
             $this->auth->solicitarRecuperacao($q->input('email'), $q->ip);
-        } catch (LimiteExcedido $e) {
+        } catch (LimiteExcedido | FalhaEnvio $e) {
             return $this->pagina('auth/recuperar', ['enviado' => false, 'erros' => ['geral' => $e->getMessage()]], 429);
         }
         return $this->pagina('auth/recuperar', ['enviado' => true, 'erros' => []]);

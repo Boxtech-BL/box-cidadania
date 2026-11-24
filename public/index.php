@@ -41,12 +41,7 @@ try {
     $app = new App($pdo, $sessao, App::criarMailer());
     $app->atender(Request::doGlobais($app->prefixo))->enviar();
 } catch (Throwable $e) {
-    // Grava o erro num arquivo próprio: na hospedagem compartilhada o error_log do PHP pode ir para outro lugar.
-    $codigo = bin2hex(random_bytes(4));
-    $registro = sprintf("[%s] erro %s\n%s\n\n", date('c'), $codigo, (string) $e);
-    if (@file_put_contents(RAIZ . '/storage/logs/erros-' . date('Y-m') . '.log', $registro, FILE_APPEND | LOCK_EX) === false) {
-        error_log($registro);
-    }
+    $codigo = \BoxCidadania\Support\Log::erro('requisição', $e);
     http_response_code(500);
     header('Content-Type: text/html; charset=UTF-8');
     echo $producao

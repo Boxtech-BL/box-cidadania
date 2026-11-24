@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace BoxCidadania\Auth;
 
+use BoxCidadania\Mail\FalhaEnvio;
 use BoxCidadania\Mail\Mailer;
 use BoxCidadania\Support\Clock;
+use BoxCidadania\Support\Log;
 use BoxCidadania\Support\Pseudonimo;
 use BoxCidadania\Support\Transacao;
 use PDO;
@@ -97,9 +99,18 @@ final class AuthService
             return $id;
         });
 
-        $this->enviarVerificacao($id, $email);
+        // A conta já existe: se o e-mail falhar, a pessoa entra e pede o reenvio, em vez de ver um erro.
+        try {
+            $this->enviarVerificacao($id, $email);
+            $this->ultimoEnvioFalhou = false;
+        } catch (FalhaEnvio $e) {
+            $this->ultimoEnvioFalhou = true;
+        }
         return $id;
     }
+
+    /** true quando o último cadastro foi criado mas o e-mail de confirmação não saiu. */
+    public bool $ultimoEnvioFalhou = false;
 
     public function reenviarVerificacao(int $usuarioId): void
     {
@@ -171,7 +182,7 @@ final class AuthService
             ->execute([$usuario['id']]);
         $token = $this->criarToken((int) $usuario['id'], 'recuperar_senha', self::VALIDADE_RECUPERACAO);
         $link = $this->urlBase . '/redefinir-senha?token=' . $token;
-        $this->mailer->enviar(
+        $this->enviarEmail(
             $usuario['email'],
             'Recuperação de senha - Box Cidadania',
             "Recebemos um pedido para redefinir a sua senha.\n\n"
@@ -311,13 +322,23 @@ final class AuthService
     {
         $token = $this->criarToken($usuarioId, 'verificar_email', self::VALIDADE_VERIFICACAO);
         $link = $this->urlBase . '/verificar-email?token=' . $token;
-        $this->mailer->enviar(
+        $this->enviarEmail(
             $email,
             'Confirme o seu e-mail - Box Cidadania',
             "Bem-vindo ao Box Cidadania.\n\n"
             . "Para poder votar nas consultas, confirme o seu e-mail abrindo o link abaixo em até 48 horas:\n{$link}\n\n"
             . "Se você não criou esta conta, ignore este e-mail.\n"
         );
+    }
+
+    private function enviarEmail(string $para, string $assunto, string $texto): void
+    {
+        try {
+            $this->mailer->enviar($para, $assunto, $texto);
+        } catch (\Throwable $e) {
+            $codigo = Log::erro('envio de e-mail', $e);
+            throw new FalhaEnvio("Não conseguimos enviar o e-mail agora (código {$codigo}). Tente de novo em alguns minutos.", 0, $e);
+        }
     }
 
     private function criarToken(int $usuarioId, string $tipo, int $validadeSegundos): string

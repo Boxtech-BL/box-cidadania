@@ -89,4 +89,6 @@ O schema `public` do banco de teste é apagado e recriado a cada execução. Com
 6. **Primeiro acesso.** Abra o endereço: as tabelas e os dados de UFs e municípios são criados sozinhos. Depois de cada publicação, as migrations novas também são aplicadas no primeiro acesso.
 7. **Cron.** Em **Tarefas agendadas** do painel, crie uma tarefa diária às 03:00 com `php /home/SEU_LOGIN/public_html/cidadania/cron/limpeza_diaria.php` (troque pelo caminho real que o FTP mostra). As coletas da pauta e dos resultados entram nas etapas 2 e 3.
 
+Se o site mostrar "Algo deu errado", o detalhe fica em `storage/logs/erros-AAAA-MM.log`, procurando pelo código do erro que aparece na página.
+
 O HTTPS já é forçado pelo nginx da Locaweb. Não ponha redirecionamento por `%{HTTPS}` no `.htaccess`: o Apache recebe a conexão já sem criptografia e a regra entra em laço.
